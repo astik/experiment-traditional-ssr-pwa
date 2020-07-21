@@ -1,0 +1,29 @@
+@import '../../node_modules/minireset.css/minireset.sass';
+
+.nav {
+	display: flex;
+	padding: 10px 0;
+
+	&__item {
+		background: #cccccc;
+		flex: 1;
+		margin: 0 10px;
+		text-align: center;
+
+		a {
+			padding: 10px;
+			display: block;
+			color: black;
+
+			&:hover,
+			&:focus {
+				color: white;
+				background: rgba(0, 0, 0, 0.5);
+			}
+		}
+	}
+}
+
+#main {
+	margin: 10px;
+}

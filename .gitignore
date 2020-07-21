@@ -4,3 +4,5 @@
 /coverage
 /keys
 /start.sh
+/public/*.css
+/public/*.css.map

@@ -4,6 +4,7 @@ import cookieParser from 'cookie-parser';
 import path from 'path';
 import url from 'url';
 import indexRouter from './routes/index.js';
+import sassMiddleware from 'node-sass-middleware';
 
 const __filename = url.fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -16,7 +17,18 @@ app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 
 app.use(cookieParser());
+
 app.use('/', indexRouter);
+
+app.use(
+	'/public',
+	sassMiddleware({
+		src: path.join(__dirname, 'scss'),
+		dest: 'public',
+		indentedSyntax: false,
+		sourceMap: true,
+	})
+);
 app.use('/public', express.static('public'));
 
 // catch 404 and forward to error handler
