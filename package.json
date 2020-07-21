@@ -1,0 +1,23 @@
+{
+	"name": "poc-ssr-pwa",
+	"version": "1.0.0",
+	"description": "POC SSR and PWA",
+	"type": "module",
+	"private": true,
+	"main": "src/index.js",
+	"scripts": {
+		"start": "node src/index.js",
+		"dev": "nodemon src/index.js --watch src"
+	},
+	"dependencies": {
+		"cookie-parser": "1.4.5",
+		"express": "4.17.1"
+	},
+	"devDependencies": {
+		"eslint": "7.5.0",
+		"eslint-config-prettier": "6.11.0",
+		"eslint-plugin-prettier": "3.1.4",
+		"nodemon": "2.0.4",
+		"prettier": "2.0.5"
+	}
+}
