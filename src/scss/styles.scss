@@ -1,4 +1,4 @@
-@import '../../node_modules/minireset.css/minireset.sass';
+@import '../../node_modules/normalize.css/normalize';
 
 html,
 body {
@@ -8,6 +8,8 @@ body {
 .nav {
 	display: flex;
 	padding: 10px 0;
+	margin: 0;
+	list-style: none;
 
 	&__item {
 		background: #cccccc;
@@ -19,7 +21,6 @@ body {
 			padding: 10px;
 			display: block;
 			color: black;
-			text-transform: uppercase;
 			text-decoration: none;
 
 			&:hover,
@@ -41,4 +42,6 @@ h1 {
 	margin-bottom: 10px;
 	font-weight: bold;
 	text-align: center;
+	font-size: 200%;
+	text-transform: uppercase;
 }
