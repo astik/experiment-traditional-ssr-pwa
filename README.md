@@ -1,23 +1,18 @@
 # POC SSR PWA
 
-The idea is to plug a PWA upon an existing traditional SSR website and being able to optimize loading.
+This project aims to experiment service worker ability to handle background network activity in order to optimize browsing a traditional SSR website.
 
--   identify a target website
--   isolate common structure
--   add a proxy ?
--   intercept request
--   extract from response useful content, response without common structure
--   define common structure as app shell
--   manage cache for app shell : long cache with a background refresh ? cache first ?
--   manage cache for content : short cache ?
--   serve optimized chunk from server for content, do not send common structure
+## Bootstrap
 
-## Lorem ipsum generator
+```sh
+clone git@github.com:astik/experiment-traditional-ssr-pwa.git
+cd experiment-traditional-ssr-pwa
+npm install
+# generate server certificate (see HTTPS section below)
+npm run start
+```
 
--   http://fillerama.io/
--   http://www.catipsum.com/index.php
--   http://officeipsum.com/index.php
--   https://trumpipsum.net/?paras=5&type=make-it-great
+Open browser on https://knut.local:3443.
 
 ## HTTPS
 
@@ -31,6 +26,13 @@ openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout server.key -out serv
 The _subjectAltName_ attribute is needed for Chrome to accept the certificate.
 
 As the POC is running in local, the self signed certificate may need to be added to your system keychain in order to be trusted.
+
+## Lorem ipsum generator
+
+-   http://fillerama.io/
+-   http://www.catipsum.com/index.php
+-   http://officeipsum.com/index.php
+-   https://trumpipsum.net/?paras=5&type=make-it-great
 
 ## Content-Security-Policy
 
@@ -93,3 +95,15 @@ POST about:blank net::ERR_UNKNOWN_URL_SCHEME
 In this use case, you may use privacy mode to disable temporary the extension or you can simply turn it off.
 
 More information: https://github.com/gorhill/uMatrix/wiki/Raw-settings#disablecspreportinjection
+
+## TODO
+
+-   identify a target website
+-   isolate common structure
+-   add a proxy ?
+-   intercept request
+-   extract from response useful content, response without common structure
+-   define common structure as app shell
+-   manage cache for app shell : long cache with a background refresh ? cache first ?
+-   manage cache for content : short cache ?
+-   serve optimized chunk from server for content, do not send common structure

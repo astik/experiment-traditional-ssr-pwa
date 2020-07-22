@@ -1,7 +1,7 @@
 {
-	"name": "poc-ssr-pwa",
+	"name": "experiment-traditional-ssr-pwa",
 	"version": "1.0.0",
-	"description": "POC SSR and PWA",
+	"description": "Experiment traditional SSR and PWA",
 	"type": "module",
 	"private": true,
 	"main": "src/index.js",
