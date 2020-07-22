@@ -18,3 +18,12 @@ The idea is to plug a PWA upon an existing traditional SSR website and being abl
 -   http://www.catipsum.com/index.php
 -   http://officeipsum.com/index.php
 -   https://trumpipsum.net/?paras=5&type=make-it-great
+
+## HTTPS
+
+In order to use _serviceWorker_ we need the application to be served over HTTPS.
+
+```sh
+# feel free to update the request conf: server.conf
+openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout server.key -out server.pem -config server.conf -sha256
+```

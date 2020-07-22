@@ -1,15 +1,17 @@
-import createError from 'http-errors';
-import express from 'express';
 import cookieParser from 'cookie-parser';
+import express from 'express';
+import fs from 'fs';
+import createError from 'http-errors';
+import https from 'https';
+import sassMiddleware from 'node-sass-middleware';
 import path from 'path';
 import url from 'url';
 import indexRouter from './routes/index.js';
-import sassMiddleware from 'node-sass-middleware';
 
 const __filename = url.fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 3443;
 
 const app = express();
 
@@ -46,24 +48,32 @@ app.use(function (err, req, res, next) {
 	res.render('error', { title: 'Error' });
 });
 
-app.on('error', (error) => {
-	if (error.syscall !== 'listen') {
-		throw error;
-	}
-	switch (error.code) {
-		case 'EACCES':
-			console.error(`${PORT} requires elevated privileges`);
-			process.exit(1);
-			break;
-		case 'EADDRINUSE':
-			console.error(`${PORT} is already in use`);
-			process.exit(1);
-			break;
-		default:
+https
+	.createServer(
+		{
+			key: fs.readFileSync('server.key'),
+			cert: fs.readFileSync('server.pem'),
+		},
+		app
+	)
+	.on('error', (error) => {
+		if (error.syscall !== 'listen') {
 			throw error;
-	}
-});
-
-app.listen(PORT, () => {
-	console.log(`Listening on port ${PORT}.`);
-});
+		}
+		switch (error.code) {
+			case 'EACCES':
+				console.error(`${PORT} requires elevated privileges`);
+				process.exit(1);
+				break;
+			case 'EADDRINUSE':
+				console.error(`${PORT} is already in use`);
+				process.exit(1);
+				break;
+			default:
+				throw error;
+		}
+	})
+	.on('listening', () => {
+		console.log(`Listening on port ${PORT}.`);
+	})
+	.listen(PORT);

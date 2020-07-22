@@ -6,3 +6,5 @@
 /start.sh
 /public/*.css
 /public/*.css.map
+/server.key
+/server.pem
