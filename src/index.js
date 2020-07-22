@@ -1,3 +1,4 @@
+import bodyParser from 'body-parser';
 import cookieParser from 'cookie-parser';
 import express from 'express';
 import fs from 'fs';
@@ -31,7 +32,18 @@ app.use(
 		sourceMap: true,
 	})
 );
+
+app.use('/public/sw.js', function (req, res, next) {
+	res.set('Service-Worker-Allowed', '/');
+	return next();
+});
+
 app.use('/public', express.static('public'));
+
+app.post(`/csp/report`, bodyParser.json({ type: 'application/csp-report' }), (req, res) => {
+	console.log('CSP header violation', req.body[`csp-report`]);
+	res.status(204).end();
+});
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
