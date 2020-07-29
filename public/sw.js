@@ -1,4 +1,3 @@
-console.log('[SW] service workers');
 const CACHE = 'my-cache';
 
 self.addEventListener('install', function (event) {
@@ -15,30 +14,20 @@ self.addEventListener('activate', (event) => {
 });
 
 self.addEventListener('fetch', function (event) {
-	console.log('[SW] fetch', event);
 	const request = event.request;
 	const url = request.url;
 	event.respondWith(
 		caches.open(CACHE).then(function (cache) {
 			return cache.match(url).then(function (response) {
-				let fetchAndCache;
 				const isOnline = navigator.onLine;
-				console.log('isOnline', isOnline);
-				if (isOnline) {
-					fetchAndCache = fetch(request).then(function (networkResponse) {
-						const url = request.url;
-						console.log('[SW] fetch: put in cache', url);
-						cache.put(url, networkResponse.clone());
-						return networkResponse;
-					});
-				}
 				if (response) {
-					console.log('[SW] fetch: cache hit', url);
+					if (isOnline) {
+						fetchAndCache(request);
+					}
 					return response;
 				}
 				if (isOnline) {
-					console.log('[SW] fetch: get it from network first', url);
-					return fetchAndCache;
+					return fetchAndCache(request);
 				}
 				return cache.match('/offline');
 			});
@@ -50,8 +39,33 @@ self.addEventListener('message', function (event) {
 	const type = event.data.type;
 	if (type === 'warmup') {
 		const url = event.data.url;
-		console.log('[SW] warmup url', url);
+		caches.open(CACHE).then(function (cache) {
+			cache.match(url).then(function (response) {
+				if (response) {
+					// no need to warmup again
+					return;
+				}
+				console.log('[SW] warmup url', url);
+				fetch(url).then(function (networkResponse) {
+					// TODO enable cache
+					// cache.put(url, networkResponse.clone());
+					networkResponse.text().then((text) => {
+						// TODO process html stream
+						console.log('TODO process html stream', text);
+					});
+				});
+			});
+		});
 	} else {
 		console.info('[SW] unknown message type', type);
 	}
 });
+
+function fetchAndCache(request) {
+	return caches.open(CACHE).then(function (cache) {
+		return fetch(request).then(function (networkResponse) {
+			cache.put(request.url, networkResponse.clone());
+			return networkResponse;
+		});
+	});
+}
