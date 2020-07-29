@@ -96,6 +96,25 @@ In this use case, you may use privacy mode to disable temporary the extension or
 
 More information: https://github.com/gorhill/uMatrix/wiki/Raw-settings#disablecspreportinjection
 
+## First run
+
+from https://developers.google.com/web/fundamentals/primers/service-workers/lifecycle#activate
+
+```
+The first time you load the demo, even though dog.svg is requested long after the service worker activates, it doesn't handle the request, and you still see the image of the dog. The default is consistency, if your page loads without a service worker, neither will its subresources. If you load the demo a second time (in other words, refresh the page), it'll be controlled. Both the page and the image will go through fetch events, and you'll see a cat instead.
+```
+
+from https://developers.google.com/web/fundamentals/primers/service-workers/lifecycle#clientsclaim
+
+```
+You can take control of uncontrolled clients by calling clients.claim() within your service worker once it's activated.
+...
+If you use your service worker to load pages differently than they'd load via the network, clients.claim() can be troublesome, as your service worker ends up controlling some clients that loaded without it.
+```
+
+As our POC is not about providing a PWA experience but focusing on providing a faster browsing, we should not have problem with `clients.claim()`.
+It will allow us to take control of the page even at the first run.
+
 ## TODO
 
 -   identify a target website
@@ -107,3 +126,33 @@ More information: https://github.com/gorhill/uMatrix/wiki/Raw-settings#disablecs
 -   manage cache for app shell : long cache with a background refresh ? cache first ?
 -   manage cache for content : short cache ?
 -   serve optimized chunk from server for content, do not send common structure
+
+## Something to search for
+
+-   how preload play along with SW cache ?
+-   how prefetch play along with SW cache ?
+-   how race condition are handle with SW cache warmup ?
+-   how communicate page to load from page to SW ? use prefetch like it is done with instant.page ?
+-   should we define a minimum cache for html content ?
+-   how expires or cache-control play along with SW cache TTL ?
+
+## Literature
+
+Prefetch / preload
+
+-   [en] https://medium.com/reloading/preload-prefetch-and-priorities-in-chrome-776165961bbf
+-   [en] https://instant.page/ and https://github.com/instantpage/instant.page
+-   [fr] https://blog.dareboost.com/fr/2020/05/preload-prefetch-et-preconnect-resource-hints/
+
+Service worker
+
+-   [en] https://jakearchibald.com/2014/offline-cookbook/
+-   [en] https://serviceworke.rs/
+-   [en] https://developers.google.com/web/fundamentals/primers/service-workers
+-   [en] https://classroom.udacity.com/courses/ud899
+
+TO READ
+
+-   [en] https://developers.google.com/web/updates/2018/05/beyond-spa
+-   [en] https://developers.google.com/web/tools/workbox/ ?
+-   [en] https://love2dev.com/blog/pwa-spa/
