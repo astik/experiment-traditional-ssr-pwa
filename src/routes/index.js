@@ -27,4 +27,8 @@ router.get('/content3', cspMiddleware, function (req, res, next) {
 	res.render('content3', { title: 'Content 3' });
 });
 
+router.get('/offline', cspMiddleware, function (req, res, next) {
+	res.render('offline', { title: 'Offline' });
+});
+
 export default router;
