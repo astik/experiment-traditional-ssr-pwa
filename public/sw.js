@@ -2,12 +2,16 @@ console.log('[SW] service workers');
 const CACHE = 'my-cache';
 
 self.addEventListener('install', function (event) {
-	console.log('[SW] service worker install', event);
+	self.skipWaiting();
 	event.waitUntil(
 		caches.open(CACHE).then(function (cache) {
 			return cache.addAll(['/offline']);
 		})
 	);
+});
+
+self.addEventListener('activate', (event) => {
+	event.waitUntil(clients.claim());
 });
 
 self.addEventListener('fetch', function (event) {
