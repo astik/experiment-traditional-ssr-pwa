@@ -29,6 +29,7 @@ self.addEventListener('fetch', function (event) {
 				if (isOnline) {
 					return fetchAndCache(request);
 				}
+				// TODO depending on request content type, return correct resource
 				return cache.match('/offline');
 			});
 		})

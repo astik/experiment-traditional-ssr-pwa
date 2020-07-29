@@ -2,6 +2,20 @@
 
 This project aims to experiment service worker ability to handle background network activity in order to optimize browsing a traditional SSR website.
 
+## Introduction
+
+PWA allows web developer to create advanced web application with powerful abilities:
+
+-   a network proxy allowing request and response interception and handling
+-   advanced cache with different cache strategy
+-   offline browsing
+-   handling templating through the service worker to avoid doing it in the main JS thread
+-   managing an app shell for faster application bootstrap
+
+For this POC, we aim to plug ourselves upon an existing traditional website.
+The service worker will help to speed up navigation by preloading future needed resources.
+The application is still server side rendered and each navigation unload the old page and load the new one, this is not a SPA!
+
 ## Bootstrap
 
 ```sh
@@ -12,7 +26,7 @@ npm install
 npm run start
 ```
 
-Open browser on https://knut.local:3443.
+Open browser on https://my-local-domain:3443.
 
 ## HTTPS
 
@@ -26,13 +40,6 @@ openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout server.key -out serv
 The _subjectAltName_ attribute is needed for Chrome to accept the certificate.
 
 As the POC is running in local, the self signed certificate may need to be added to your system keychain in order to be trusted.
-
-## Lorem ipsum generator
-
--   http://fillerama.io/
--   http://www.catipsum.com/index.php
--   http://officeipsum.com/index.php
--   https://trumpipsum.net/?paras=5&type=make-it-great
 
 ## Content-Security-Policy
 
@@ -112,29 +119,29 @@ You can take control of uncontrolled clients by calling clients.claim() within y
 If you use your service worker to load pages differently than they'd load via the network, clients.claim() can be troublesome, as your service worker ends up controlling some clients that loaded without it.
 ```
 
-As our POC is not about providing a PWA experience but focusing on providing a faster browsing, we should not have problem with `clients.claim()`.
+As our POC is not about providing a PWA experience but focusing on providing a faster browsing experience, we should not have problem with `clients.claim()`.
 It will allow us to take control of the page even at the first run.
 
-## TODO
+## Prepare future navigation
 
--   identify a target website
--   isolate common structure
--   add a proxy ?
--   intercept request
--   extract from response useful content, response without common structure
--   define common structure as app shell
--   manage cache for app shell : long cache with a background refresh ? cache first ?
--   manage cache for content : short cache ?
--   serve optimized chunk from server for content, do not send common structure
+The idea is to speed up future navigation.
+To do so, we preload as much resources that might be used as possible.
 
-## Something to search for
+To predict what page might be visited by user, we setup an event listener on some links.
 
--   how preload play along with SW cache ?
--   how prefetch play along with SW cache ?
--   how race condition are handle with SW cache warmup ?
--   how communicate page to load from page to SW ? use prefetch like it is done with instant.page ?
--   should we define a minimum cache for html content ?
--   how expires or cache-control play along with SW cache TTL ?
+In this POC, we listen to hover on main navigation links.
+If one of those links is hovered, a _warmup_ event is triggered on the document.
+
+The service worker initialization script add an event listener on the document for the _warmup_ event and forward the link information to warmup to the service worker.
+
+The service worker is listening for message, especially those with a payload type _warmup_.
+If a message is received, it fetches the page and add it to the cache, enhancing future navigation.
+
+To go further, we need to analyze the retrieved page to extract linked resource from the HTML content and add them to the cache as well.
+
+## Extracting resource from HTML content
+
+TODO
 
 ## Literature
 
@@ -156,3 +163,10 @@ TO READ
 -   [en] https://developers.google.com/web/updates/2018/05/beyond-spa
 -   [en] https://developers.google.com/web/tools/workbox/ ?
 -   [en] https://love2dev.com/blog/pwa-spa/
+
+## Lorem ipsum generator
+
+-   http://fillerama.io/
+-   http://www.catipsum.com/index.php
+-   http://officeipsum.com/index.php
+-   https://trumpipsum.net/?paras=5&type=make-it-great
