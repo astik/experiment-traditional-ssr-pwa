@@ -1,6 +1,7 @@
 import bodyParser from 'body-parser';
 import cookieParser from 'cookie-parser';
 import express from 'express';
+import babelify from 'express-babelify-middleware';
 import fs from 'fs';
 import createError from 'http-errors';
 import https from 'https';
@@ -36,7 +37,7 @@ app.use(
 app.use('/public/sw.js', function (req, res, next) {
 	res.set('Service-Worker-Allowed', '/');
 	return next();
-});
+}, babelify('src-front/sw.js'));
 
 app.use('/public', express.static('public'));
 

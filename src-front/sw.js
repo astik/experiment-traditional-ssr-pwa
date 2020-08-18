@@ -1,3 +1,5 @@
+import { extractResourcesUrl } from './extractResourcesUrl';
+
 const CACHE = 'my-cache';
 
 self.addEventListener('install', function (event) {
@@ -56,8 +58,8 @@ self.addEventListener('message', function (event) {
 					// TODO enable cache
 					// cache.put(url, networkResponse.clone());
 					networkResponse.text().then((text) => {
-						// TODO process html stream
-						console.log('TODO process html stream', text);
+						const resourcesUrl = extractResourcesUrl(text);
+						console.log('TODO process html stream', text, resourcesUrl);
 					});
 				});
 			});
