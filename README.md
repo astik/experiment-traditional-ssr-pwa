@@ -141,6 +141,21 @@ To go further, we need to analyze the retrieved page to extract linked resource 
 
 ## Extracting resource from HTML content
 
+Once we retrieved the HTML stream while warming up, we hit a new wall: transforming the string result into a DOM-like tree in order to extract images, stylesheets and scripts.
+The idea is to be as light as possible, so we'll try not to load external dependencies and stick with what the browser has.
+
+Using a regex for extracting resources' url is a no-way.
+
+We could load the string in a *DocumentFragment* and then use *querySelectorAll*.
+But, as the process is run inside the service worker, we do not have access to *document*.
+
+Another solution would have been to use the *template* markup, but once again, *document* is not enable.
+
+Another shot would be to use *DOMParser* but here again, it is not exposed to the service worker.
+From https://github.com/w3c/ServiceWorker/issues/846, `DOM implementations in browsers are not thread-safe.`
+
+Let's give up for now and try the external dependency: *parse5* (https://github.com/inikulin/parse5).
+
 TODO
 
 ## Literature
