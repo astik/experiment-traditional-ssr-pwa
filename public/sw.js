@@ -4,7 +4,7 @@ self.addEventListener('install', function (event) {
 	self.skipWaiting();
 	event.waitUntil(
 		caches.open(CACHE).then(function (cache) {
-			return cache.addAll(['/offline']);
+			return cache.addAll(['/offline', '/public/offline.png']);
 		})
 	);
 });
@@ -29,8 +29,13 @@ self.addEventListener('fetch', function (event) {
 				if (isOnline) {
 					return fetchAndCache(request);
 				}
-				// TODO depending on request content type, return correct resource
-				return cache.match('/offline');
+				if (request.destination === 'image') {
+					return cache.match('/public/offline.png');
+				}
+				if (request.destination === 'document') {
+					return cache.match('/offline');
+				}
+				console.log('offline and request destination not managed', request);
 			});
 		})
 	);
