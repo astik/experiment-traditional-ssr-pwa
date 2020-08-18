@@ -53,15 +53,17 @@ self.addEventListener('message', function (event) {
 					// no need to warmup again
 					return;
 				}
-				console.log('[SW] warmup url', url);
-				fetch(url).then(function (networkResponse) {
-					// TODO enable cache
-					// cache.put(url, networkResponse.clone());
-					networkResponse.text().then((text) => {
-						const resourcesUrl = extractResourcesUrl(text);
-						console.log('TODO process html stream', text, resourcesUrl);
+				if (navigator.onLine) {
+					console.log('[SW] warmup url', url);
+					fetch(url).then(function (networkResponse) {
+						cache.put(url, networkResponse.clone());
+						networkResponse.text().then((text) => {
+							const resourcesUrls = extractResourcesUrl(text);
+							// TODO filter out non needed resources ?
+							cache.addAll(resourcesUrls);
+						});
 					});
-				});
+				}
 			});
 		});
 	} else {
