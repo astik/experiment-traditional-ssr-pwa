@@ -1,6 +1,6 @@
 # POC SSR PWA
 
-This project aims to experiment service worker ability to handle background network activity in order to optimize browsing a traditional SSR website.
+This project aims to experiment service worker ability to handle background network activity in order to optimize browsing a traditional SSR website by creating a cache for future needed resources.
 
 ## Introduction
 
@@ -146,17 +146,33 @@ The idea is to be as light as possible, so we'll try not to load external depend
 
 Using a regex for extracting resources' url is a no-way.
 
-We could load the string in a *DocumentFragment* and then use *querySelectorAll*.
-But, as the process is run inside the service worker, we do not have access to *document*.
+We could load the string in a _DocumentFragment_ and then use _querySelectorAll_.
+But, as the process is run inside the service worker, we do not have access to _document_.
 
-Another solution would have been to use the *template* markup, but once again, *document* is not enable.
+Another solution would have been to use the _template_ markup, but once again, _document_ is not enable.
 
-Another shot would be to use *DOMParser* but here again, it is not exposed to the service worker.
+Another shot would be to use _DOMParser_ but here again, it is not exposed to the service worker.
 From https://github.com/w3c/ServiceWorker/issues/846, `DOM implementations in browsers are not thread-safe.`
 
-Let's give up for now and try the external dependency: *parse5* (https://github.com/inikulin/parse5).
+Let's give up for now and try the external dependency: _parse5_ (https://github.com/inikulin/parse5).
+_parse5_ transform the entry string into a tree structure representing the underlying DOM structure.
+With a very naive iterative tree processing, all the nodes are scanned to extract specific information.
+In the POC, we extract _script_, _link_ (with `rel=stylesheet`) and _img_ markup in order to extract URL.
+Once we've retrieved all the needed URLs, we add those to the application cache (naive approach : `cache.addAll`).
 
-TODO
+## Conclusion
+
+By adding a small footprint to an existing app, we introduce a powerful way to speed up browing a "classic" website:
+
+-   add `init-sw.js` to website pages in order to initialize service worker and listen for warmup
+-   add `init-warmup.js` to define which link should be warmup
+-   add `sw.js` which is the background service worker
+
+Most of this works in the background, it won't block the main JS loop.
+
+One thing though, adding an application cache for an offline application does not mean you can get rid of HTTP classic cache mechanism (_expires_, _cache-control_, _modified-date_,, _etag_).
+Everytime we reach for a resource we get it from the cache but we are still fetching from the network to update the resource.
+Without proper classic HTTP cache, we would retrieve all the resources from the server which would lead to a high bandwith usage.
 
 ## Literature
 
@@ -164,6 +180,7 @@ Prefetch / preload
 
 -   [en] https://medium.com/reloading/preload-prefetch-and-priorities-in-chrome-776165961bbf
 -   [en] https://instant.page/ and https://github.com/instantpage/instant.page
+-   [en] https://github.com/GoogleChromeLabs/quicklink
 -   [fr] https://blog.dareboost.com/fr/2020/05/preload-prefetch-et-preconnect-resource-hints/
 
 Service worker
@@ -172,16 +189,26 @@ Service worker
 -   [en] https://serviceworke.rs/
 -   [en] https://developers.google.com/web/fundamentals/primers/service-workers
 -   [en] https://classroom.udacity.com/courses/ud899
-
-TO READ
-
 -   [en] https://developers.google.com/web/updates/2018/05/beyond-spa
--   [en] https://developers.google.com/web/tools/workbox/ ?
+-   [en] https://developers.google.com/web/tools/workbox
+
+Important to understand
+
 -   [en] https://love2dev.com/blog/pwa-spa/
 
-## Lorem ipsum generator
+Lorem ipsum generator (for simulating cms pages)
 
 -   http://fillerama.io/
 -   http://www.catipsum.com/index.php
 -   http://officeipsum.com/index.php
 -   https://trumpipsum.net/?paras=5&type=make-it-great
+
+Images (scaled down)
+
+-   otter/01: https://en.wikipedia.org/wiki/Sea_otter
+-   otter/02: https://www.bbc.co.uk/news/uk-scotland-north-east-orkney-shetland-50558094
+-   otter/03: https://cosmosmagazine.com/biology/marine-otter-problems-predate-the-fur-trade/
+-   otter/04: https://www.sunset.com/travel/sea-otters-the-brightest-stars-in-monterey-bay
+-   otter/05: https://www.smithsonianmag.com/smart-news/hungry-otters-juggle-behaviors-function-remains-mysterious-180974837/
+-   otter/06: https://edition.cnn.com/2019/04/23/us/charlie-otter-aquarium-trnd/index.html
+-   otter/07: http://www.bbc.com/earth/story/20170619-conservation-success-for-otters-on-the-brink
